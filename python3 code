@@ -1,0 +1,28 @@
+%matplotlib inline
+import numpy as np
+from matplotlib import pyplot
+def AIC(S,i):                         # AIC=i*log(var(x1,i))+(N-i-1)*log(var(x(i+1,N)))
+    S=np.append([0],S)                # S_-1 is introducted as virtual object and equals to zero 
+    X=np.diff(S)
+    std1=np.std(X[0:i])
+    std2=np.std(X[i+1:len(X)])
+    if std1==0.0:
+        std1=0.001
+    elif std2==0:
+        std2=0.001
+    part1=i*np.log(std1)
+    part2=(len(X)-i-1)*(np.log(std2))
+    return part1+part2
+    #############################################
+    import pandas as pd
+k=pd.read_excel('AIV Process.xlsx','Transmitter3',na_value=0).fillna(0)
+    S=k['Receiver4']
+    out=[]
+for i in range(1000):
+    out.append(AIC(S,i))
+    pd.DataFrame(out).to_excel('test.xlsx') # export the output into excel format
+    
+    pyplot.plot(out)                        #display the result fig in the program
+pyplot.savefig('foo.pdf')                   # save the result fig into pdf format
+###############################################
+# The aim of AIC process for acoustic data is to find the min AIC. Follow up work is to identify the min AIC for each file.
